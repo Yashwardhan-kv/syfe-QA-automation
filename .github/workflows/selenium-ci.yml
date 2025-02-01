@@ -1,0 +1,34 @@
+name: Selenium Tests CI
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+
+jobs:
+  selenium-test:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v3
+
+      - name: Set Up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.9"
+
+      - name: Install Dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run Selenium Tests
+        run: pytest --headless --html=report.html || echo "Tests failed" > test_status.txt
+
+      - name: Send Slack Notification
+        if: always()
+        env:
+          SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
+        run: |
+          STATUS="✅ SUCCESS"
+          if [ -f test_status.txt ]; then STATUS="❌ FAILED"; fi
+          curl -X POST -H 'Content-type: application/json' --data '{"text": "🚀 Selenium Tests: '"$STATUS"'"}' $SLACK_WEBHOOK_URL
