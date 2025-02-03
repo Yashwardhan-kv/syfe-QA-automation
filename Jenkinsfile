@@ -6,7 +6,7 @@ pipeline {
     stages {
         stage('Checkout') {
             steps {
-                git branch: 'main', url: 'https://github.com/your-repo/syfe-qa-automation.git'
+                git branch: 'main', url: 'https://github.com/Yashwardhan-kv/syfe-qa-automation.git'
             }
         }
         stage('Install Dependencies') {
